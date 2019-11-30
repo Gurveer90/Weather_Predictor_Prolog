@@ -13,7 +13,7 @@ parseSubject(PS0,PS2,Parameter) :-
   parseSubject(PS1,PS2,Parameter).
 parseSubject(P,P,_).
 
-%assin weather values
+%assign weather values
 %values are in weatherValueTable
 getWeatherValue(PS0,PS2,Parameter) :-
     weatherValue(PS0,PS1,Parameter),
@@ -30,12 +30,21 @@ subject([is| P],P,_).
 
 weatherValue([H1 | T], T, Temp) :- weatherValueTable(H1, Temp).
 weatherValueTable(temperature, temp).
+weatherValueTable(humidity, humidity).
 weatherValueTable(rainfall, rain).
 weatherValueTable(windspeed, wind).
-weatherValueTable(hot, 273).
-weatherValueTable(medium, 100).
-weatherValueTable(high, 100).
-weatherValueTable(slow, 100).
+weatherValueTable(hot, 282).
+weatherValueTable(moderate, 278).
+weatherValueTable(pleasant,274).
+weatherValueTable(cold, 270).
+weatherValueTable(supercold, 266).
+weatherValueTable(extremecold, 262).
+weatherValueTable(high, 62).
+weatherValueTable(intermediate, 58).
+weatherValueTable(low, 54).
+
+
+
 
 
 

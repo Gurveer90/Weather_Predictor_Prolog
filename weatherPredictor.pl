@@ -32,11 +32,10 @@ openGeoCoder(Data, Location) :-
     close(In)
     ).
 
-%this is main part of program, here opwn weather API is called
-%&lon= indicates longitudes
-%lat= indicates lattitude
-%cnt indicates number of cities around coordinates
-%Note: Because of free version of API number of cities are limited
+% this is main part of program, here opwn weather API is called &lon=
+% indicates longitudes lat= indicates lattitude cnt indicates number of
+% cities around coordinates Note: Because of free version of API number
+% of cities are limited
 openWeatherMap(Data,Lat,Lon) :-
     Url_Start = "http://api.openweathermap.org/data/2.5/find?lat=",
     Lat_lon_separator = "&lon=",
@@ -46,8 +45,9 @@ openWeatherMap(Data,Lat,Lon) :-
     string_concat(Url_1, Lat_lon_separator, Url_2),
     string_concat(Url_2, Lon, Url_3),
     string_concat(Url_3, Query_type, Url_4),
-    string_concat(Url_4, 30, Url_5),
+    string_concat(Url_4, 1, Url_5),
     string_concat(Url_5, Url_End, URL),
+    write(URL),
     http_open(URL, In, [request_header('Accept'='application/json')]),
     json_read_dict(In, Data),
     close(In).
@@ -58,10 +58,10 @@ result_coder(Lat, Lon, Parameters, Values,PL) :-
     openWeatherMap(Data, Lat, Lon),
     N= Data.get('count'),
     List = Data.get('list'),
-    length(List,Len),
-    format(Len),
-    E is N-1,E>0,
-    write(E),nl,
+    %length(List,Len),
+    %format(Len),
+    E is N-1,E>=0,
+    %write(E),nl,
     result_helper(List, Lat, Lon,Parameters, Values,E,PL).
 
 decr(X,NX) :-
@@ -73,26 +73,38 @@ result_helper(_,_,_,_,-1,-1):-format("Sorry, give other coordinates!").
 result_helper(List, Lat, Lon, Parameters, Values, E, PL):-
     nth0(E,List,FirstList),
     decr(E,A),
-    A>=0,
-     display_with_filters(FirstList,Parameters, Values, PL),
-    result_helper(List, Lat, Lon, Parameters, Values, A, PL).
+    A>= -1,
+    display_with_filters(FirstList,Parameters, Values, PL),
+    result_helper(List, Lat, Lon, Parameters, Values, A, PL);
+    true.
 
 %final result display
 display_with_filters(FirstList, Parameters, Values, PL):-
-    ( PL >= 0 ->
     Name = FirstList.get('name'),
+    check_filters(FirstList,Parameters, Values, PL),
+    write('---------------'),
+    nl,
+    write(Name),
+    nl,
+    write(FirstList);
+    true.
+
+%verify conditions
+check_filters(FirstList,Parameters,Values,PL ):-
+    ( PL >= 0 ->
     PointMain = FirstList.get('main'),
     nth0(PL,Parameters,X0),
     nth0(PL,Values,V0),
     nth0(0,X0,X1),
     nth0(0,V0,V1),
-    PointMain.get(X1) >= (V1-2),
-    PointMain.get(X1) <  (V1+2),
-    write('-----------------------------'),nl,
-    write(Name),nl,
-    write(FirstList),nl,
-    decr(PL,Z),
-    display_with_filters(FirstList,Parameters, Values, Z); true).
+      ( PointMain.get(X1) >= (V1-2) -> true; false ),
+      ( PointMain.get(X1) <  (V1+2) -> true;false  ),
+      decr(PL,Z),
+      check_filters(FirstList,Parameters, Values,Z)
+       ; (PL == -1 -> true; false)).
+
+
+
 
 
 

@@ -1,5 +1,5 @@
-:- [Weather_Predictor].
-:- [NLP_Queries].
+:- [weatherPredictor].
+:- [nlpQueries].
 
 %this is the entry point for program
 %to excute type main_fn().
@@ -13,9 +13,9 @@
 "lon": -123.07
 },
 "main": {
-"temp": 274.82,
-"pressure": 1014,
-"humidity": 59,
+"temp": 274.82,(in Kelvin)
+"pressure": 1014,(in HectoPascals/HPa)
+"humidity": 59,(in % percentage)
 "temp_min": 273.15,
 "temp_max": 276.48
 },
@@ -72,11 +72,11 @@ main_nlp_fn() :-
     number(Values),
     split([Parameters],P),
     split([Values],V),
-    write('values'),
-    nl,
-    write(P),
-    nl,
-    write(V),
+   % write('values'),
+   % nl,
+   % write(P),
+   % nl,
+   % write(V),
     result_geocode(Location,P,V,0).
 
 %split comma separated values into array
